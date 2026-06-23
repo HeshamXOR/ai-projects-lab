@@ -1,0 +1,4 @@
+gradio>=4.0
+transformers>=4.38
+torch>=2.0
+pillow>=10.0
