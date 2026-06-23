@@ -14,6 +14,10 @@ Every project is self-contained: its own `app.py`, `requirements.txt`, and READM
 | 2 | [**Resume ↔ Job Matcher**](02-resume-matcher/) | Paste a resume + a job description → match score, matched skills, and **gap analysis** | Semantic embeddings + keyword extraction | Gradio |
 | 3 | [**Image Q&A (Multimodal)**](03-image-qa/) | Upload an image → auto caption + ask **visual questions** about it | BLIP vision-language model | Gradio |
 | 4 | [**Smart Summarizer**](04-smart-summarizer/) | Paste a long article/transcript → structured summary + **action items** | Transformer summarization (chunked) | Gradio |
+| 5 | [**Sentiment & Emotion Analyzer**](05-sentiment-emotion/) | Classify sentiment + fine-grained emotions; single text or **batch CSV** | RoBERTa + DistilBERT classifiers | Gradio |
+| 6 | [**Semantic Code Search**](06-code-search/) | Index a codebase, search functions by **natural language** | AST parsing + embeddings | Gradio |
+| 7 | [**Speech-to-Text + Summary**](07-speech-to-text/) | Upload/record audio → **transcript** (Whisper) + summary | OpenAI Whisper + summarization | Gradio |
+| 8 | [**AI Image Generator**](08-image-generator/) | Text prompt → generated **image**, with full controls | Stable Diffusion (diffusers) | Gradio |
 
 Each table row links to a folder with a full README, a screenshot slot, and run instructions.
 
@@ -50,7 +54,11 @@ ai-projects-lab/
 ├── 01-rag-doc-qa/
 ├── 02-resume-matcher/
 ├── 03-image-qa/
-└── 04-smart-summarizer/
+├── 04-smart-summarizer/
+├── 05-sentiment-emotion/
+├── 06-code-search/
+├── 07-speech-to-text/
+└── 08-image-generator/
 ```
 
 ## License

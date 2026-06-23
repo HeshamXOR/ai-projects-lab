@@ -33,6 +33,10 @@ On Lightning you can also use the Studio's built-in port forwarding (port `7860`
 | 2 · Resume Matcher | CPU | CPU | Embedding-only; no GPU needed. |
 | 3 · Image Q&A | CPU (slow) | **L4** | BLIP is much snappier on a GPU; CPU works for a demo. |
 | 4 · Smart Summarizer | CPU | **L4** | Summarization model benefits from GPU on long inputs. |
+| 5 · Sentiment & Emotion | CPU | CPU | Small classifiers; runs fine on CPU. |
+| 6 · Code Search | CPU | CPU | Embedding-only; no GPU needed. |
+| 7 · Speech-to-Text | CPU (slow) | **L4** | Whisper is much faster on GPU; CPU works for short clips. Needs `ffmpeg`. |
+| 8 · Image Generator | CPU (very slow) | **L4** | Stable Diffusion really wants a GPU — record this preview on L4. |
 
 **Recommendation:** start every project on a **free CPU Studio** to verify it runs and to grab a screenshot. Switch to an **L4** GPU only for projects 1/3/4 when you want fast, smooth previews. An L4 is plenty — none of these need an A100.
 
