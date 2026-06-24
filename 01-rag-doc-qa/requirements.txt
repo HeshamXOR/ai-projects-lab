@@ -3,3 +3,6 @@ sentence-transformers>=2.2
 pypdf>=4.0
 numpy>=1.24
 httpx>=0.27
+pytest>=8.0
+# optional: enables the FAISS comparison in bench.py
+# faiss-cpu>=1.7

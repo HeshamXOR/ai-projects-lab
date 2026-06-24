@@ -1,42 +1,44 @@
-# 📄 RAG Document Q&A
+# 📄 RAG Document Q&A — with a from-scratch vector index
 
-Upload a PDF, ask questions, and get answers **grounded in the document** with page citations. A classic Retrieval-Augmented Generation pipeline with a clean Gradio UI.
+Upload a PDF, ask questions, get answers **grounded in the document** with page citations. Unlike a typical RAG demo, the retrieval engine here is **built from scratch**, not imported.
 
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
-## What it does
+## What I implemented from scratch
 
-1. **Chunk** — splits the PDF into overlapping text chunks, tagged by page.
-2. **Embed** — encodes chunks with `all-MiniLM-L6-v2` (Sentence-Transformers).
-3. **Retrieve** — for each question, finds the most semantically similar chunks (cosine similarity).
-4. **Answer** — stitches the most relevant sentences into a cited answer (extractive, no API key), or generates one if `OPENAI_API_KEY` is set.
+- **HNSW** approximate-nearest-neighbor index (the algorithm inside FAISS/Qdrant/pgvector) — `core/hnsw.py`
+- **BM25** keyword ranking (the core of Elasticsearch) — `core/bm25.py`
+- **Reciprocal Rank Fusion** to combine semantic + keyword search — `core/fusion.py`
 
-## Why it's real
+The embedding model and optional answer-LLM are the only pretrained components. See [EXPLAINER.md](EXPLAINER.md) for the full how-and-why.
 
-Document Q&A is one of the most common applied-AI tasks — support docs, contracts, research papers, policies. This is the core pattern behind "chat with your PDF" products, built from scratch so you understand every step.
+## Pipeline
+
+```
+PDF → page-tagged overlapping chunks → embed
+   ├─ HNSW graph index   (semantic search, ~O(log N))
+   └─ BM25 keyword index (exact-term precision)
+        → reciprocal-rank fusion → top-k → cited answer
+```
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python app.py            # http://localhost:7860  (+ a public gradio.live link)
+python app.py            # http://localhost:7860 (+ public gradio.live link)
 ```
 
-Optional generated answers:
+Default answers are extractive (no API key needed). Set `OPENAI_API_KEY` for generated answers.
+
+## Verify the engine
+
 ```bash
-export OPENAI_API_KEY=sk-...        # any OpenAI-compatible key
-# export OPENFORGE_BASE_URL=...     # to point at a different endpoint
-python app.py
+pytest -q          # recall@10 ≥ 0.90 vs exact brute force; BM25 + RRF correctness
+python bench.py    # build time, latency, speedup vs brute force (and FAISS if installed)
 ```
 
-## How it works (files)
+## Limitations
 
-- `rag.py` — the engine: `extract_pdf_chunks`, `RagEngine.index_pdf / retrieve / answer`.
-- `app.py` — the Gradio UI: upload → index → chat.
-
-## Notes & limitations
-
-- Works on **CPU**; embeddings are fast even without a GPU.
-- Scanned/image-only PDFs have no extractable text — add OCR (e.g. `pytesseract`) to handle those.
-- Extractive mode quotes the document directly; generative mode (with a key) reads more fluently.
+- Pure-Python HNSW is for *understanding* the algorithm; FAISS will be faster in raw wall-clock (C++/SIMD). The win demonstrated here is algorithmic scaling vs. brute force.
+- Scanned/image PDFs need OCR (not included).

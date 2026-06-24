@@ -1,10 +1,16 @@
-"""RAG engine: chunk a PDF, embed, retrieve, and answer with citations.
+"""RAG engine: chunk a PDF, embed, retrieve (hybrid), and answer with citations.
 
-Kept separate from the Gradio UI so it can be tested and reused. The design
-goal is "works on a free CPU Studio with no API key" — so the default answerer
-is *extractive* (it stitches together the most relevant retrieved sentences and
-cites their pages). If an OpenAI-compatible key is configured, it upgrades to a
-generative answer. Either way you always get cited, grounded output.
+The retrieval here is the point of this project. Instead of calling a vector-DB
+library, it runs a **from-scratch hybrid retriever**:
+
+  * a from-scratch **HNSW** graph index for fast approximate semantic search
+    (core/hnsw.py),
+  * a from-scratch **BM25** keyword index for exact-term precision (core/bm25.py),
+  * **reciprocal-rank fusion** to combine them (core/fusion.py).
+
+The embedding model and (optional) LLM are the only pretrained components; the
+search algorithm is implemented by hand. The answerer stays extractive by
+default (works with no API key) and upgrades to generative if a key is set.
 """
 
 from __future__ import annotations
@@ -15,6 +21,10 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 import numpy as np
+
+from core.bm25 import BM25
+from core.fusion import reciprocal_rank_fusion
+from core.hnsw import HNSW
 
 
 @dataclass
@@ -51,35 +61,55 @@ def extract_pdf_chunks(pdf_path: str, chunk_chars: int = 800, overlap: int = 120
 
 
 class RagEngine:
-    """Holds the embedding model and a per-document index."""
+    """Embedding model + a from-scratch hybrid index (HNSW vector + BM25)."""
 
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
         from sentence_transformers import SentenceTransformer
 
         self.model = SentenceTransformer(model_name)
         self.chunks: List[Chunk] = []
-        self._embeddings: Optional[np.ndarray] = None
+        self._hnsw: Optional[HNSW] = None
+        self._bm25: Optional[BM25] = None
+        self._dim: Optional[int] = None
 
     def index_pdf(self, pdf_path: str) -> int:
-        """Build the index for one PDF. Returns the number of chunks."""
+        """Build the hybrid index for one PDF. Returns the number of chunks."""
         self.chunks = extract_pdf_chunks(pdf_path)
         if not self.chunks:
-            self._embeddings = None
+            self._hnsw = self._bm25 = None
             return 0
         texts = [c.text for c in self.chunks]
-        self._embeddings = self.model.encode(
+        embeddings = self.model.encode(
             texts, convert_to_numpy=True, normalize_embeddings=True, show_progress_bar=False
         )
+        # 1) vector index: from-scratch HNSW
+        self._dim = embeddings.shape[1]
+        self._hnsw = HNSW(dim=self._dim, M=16, ef_construction=200, ef_search=64)
+        self._hnsw.add_batch(embeddings)
+        # 2) keyword index: from-scratch BM25
+        self._bm25 = BM25()
+        self._bm25.index(texts)
         return len(self.chunks)
 
-    def retrieve(self, question: str, k: int = 4) -> List[Chunk]:
-        if self._embeddings is None or not self.chunks:
+    def retrieve(self, question: str, k: int = 4, hybrid: bool = True) -> List[Chunk]:
+        """Hybrid retrieval: HNSW semantic ⊕ BM25 keyword, fused with RRF."""
+        if self._hnsw is None or not self.chunks:
             return []
-        q = self.model.encode([question], convert_to_numpy=True, normalize_embeddings=True)
-        # cosine similarity == dot product on normalized vectors
-        scores = (self._embeddings @ q[0])
-        top = np.argsort(-scores)[:k]
-        return [self.chunks[i] for i in top]
+        q_emb = self.model.encode(
+            [question], convert_to_numpy=True, normalize_embeddings=True
+        )[0]
+        # semantic candidates from the from-scratch HNSW graph
+        vec_hits = self._hnsw.search(q_emb, k=max(k * 2, 8))
+        vec_ranked = [(doc_id, -dist) for doc_id, dist in vec_hits]  # closer = better
+
+        if not hybrid or self._bm25 is None:
+            return [self.chunks[i] for i, _ in vec_ranked[:k]]
+
+        # keyword candidates from from-scratch BM25
+        kw_ranked = self._bm25.search(question, k=max(k * 2, 8))
+        # fuse the two rankings
+        fused = reciprocal_rank_fusion([vec_ranked, kw_ranked], k=60, top_n=k)
+        return [self.chunks[i] for i, _ in fused]
 
     def answer(self, question: str, k: int = 4) -> Answer:
         hits = self.retrieve(question, k=k)
