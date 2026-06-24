@@ -5,6 +5,13 @@ Paste a long article, report, or meeting transcript → get a concise **summary*
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **TextRank** extractive summarization (PageRank via power iteration on a sentence graph) — `core/textrank.py`
+- **ROUGE** evaluation (ROUGE-1/2/L) — `core/rouge.py`
+
+The transformer summarizer is the abstractive option; the app compares it against the from-scratch extractive method and scores them with from-scratch ROUGE. See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Chunked summarization** — splits long text into word-bounded chunks, summarizes each, then summarizes the combination (map-reduce), so arbitrarily long inputs work despite the model's token limit.

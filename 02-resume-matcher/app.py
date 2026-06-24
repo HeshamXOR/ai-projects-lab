@@ -21,11 +21,19 @@ def _chips(items, empty_msg):
 
 def on_match(resume, jd):
     res = matcher.match(resume, jd)
+    sig = res.signals
+    sig_line = (
+        f"semantic {sig.get('semantic', 0)}% · TF-IDF {sig.get('tfidf', 0)}% · "
+        f"skill coverage {sig.get('skill_coverage', 0)}%"
+        if sig else ""
+    )
     report = (
         f"## Match score: **{res.score}/100**\n"
         f"{res.verdict}\n\n"
+        f"_Signals: {sig_line}_\n\n"
         f"### ✅ Matched skills\n{_chips(res.matched, 'none')}\n\n"
         f"### ⚠️ Missing (in the job, not your resume)\n{_chips(res.missing, 'none — great coverage!')}\n\n"
+        f"### 🌱 Transferable skills to learn next\n{_chips(res.suggestions, 'none suggested')}\n\n"
         f"### ➕ Extra skills you bring\n{_chips(res.extra, 'none detected')}"
     )
     return report

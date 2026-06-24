@@ -112,3 +112,21 @@ def summarize(text: str) -> Summary:
 
 def device_label() -> str:
     return "Running on **GPU**" if torch.cuda.is_available() else "Running on **CPU** (works fine; long inputs take a little longer)"
+
+
+def extractive_summary(text: str, max_sentences: int = 4) -> str:
+    """From-scratch TextRank extractive summary (no model). See core/textrank.py."""
+    from core.textrank import summarize_extractive
+
+    return summarize_extractive(text, max_sentences=max_sentences)
+
+
+def compare_summaries(text: str) -> dict:
+    """Run both summarizers and score the abstractive one against the
+    extractive one with from-scratch ROUGE — a self-contained quality signal."""
+    from core.rouge import rouge_report
+
+    extractive = extractive_summary(text)
+    abstractive = summarize(text).summary
+    scores = rouge_report(abstractive, extractive)
+    return {"extractive": extractive, "abstractive": abstractive, "rouge": scores}

@@ -5,6 +5,14 @@ Paste a resume and a job description → get a **semantic match score**, the ski
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **TF-IDF vectorizer** (n-grams, L2-normalized) — `core/tfidf.py`
+- **Logistic regression** via gradient descent — `core/logreg.py`
+- **Skill co-occurrence graph** for transferable-skill suggestions — `core/skillgraph.py`
+
+The embedding model is just one of three blended signals. See [EXPLAINER.md](EXPLAINER.md). Verify with `pytest`.
+
 ## What it does
 
 - **Semantic similarity** — embeds the whole resume and job description and measures cosine similarity, so it understands meaning, not just keywords.

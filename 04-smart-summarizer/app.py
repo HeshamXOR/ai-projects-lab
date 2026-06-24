@@ -44,10 +44,26 @@ with gr.Blocks(title="Smart Summarizer", theme=gr.themes.Soft()) as demo:
     )
     gr.Markdown(summarizer.device_label())
     text = gr.Textbox(label="Text to summarize", lines=16, value=SAMPLE)
-    btn = gr.Button("Summarize", variant="primary")
+    with gr.Row():
+        btn = gr.Button("Summarize (abstractive)", variant="primary")
+        cmp_btn = gr.Button("Compare: abstractive vs. from-scratch TextRank")
     out = gr.Markdown()
 
     btn.click(on_summarize, inputs=text, outputs=out)
+
+    def on_compare(t):
+        r = summarizer.compare_summaries(t)
+        sc = r["rouge"]
+        return (
+            f"## Abstractive (transformer)\n{r['abstractive']}\n\n"
+            f"## Extractive (from-scratch TextRank)\n{r['extractive']}\n\n"
+            f"### ROUGE (abstractive vs. extractive, computed from scratch)\n"
+            f"- ROUGE-1 F1: {sc['rouge-1']['f1']:.3f}\n"
+            f"- ROUGE-2 F1: {sc['rouge-2']['f1']:.3f}\n"
+            f"- ROUGE-L F1: {sc['rouge-l']['f1']:.3f}"
+        )
+
+    cmp_btn.click(on_compare, inputs=text, outputs=out)
 
 
 if __name__ == "__main__":
