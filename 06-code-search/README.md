@@ -5,6 +5,14 @@ Index a folder of source code and search functions/classes by **natural language
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **Inverted index** with positional postings (boolean + phrase search) — `core/inverted_index.py`
+- **BM25F** field-weighted ranking over code fields — `core/bm25f.py`
+- **AST call graph** (who-calls-whom, related functions) — `core/callgraph.py`
+
+These add lexical precision + structure on top of the semantic embedding search. See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Parses code into units** — Python functions/classes via the `ast` module; a brace/keyword heuristic for JS/TS/Java/Go/Rust/C/C++/C#/Ruby.

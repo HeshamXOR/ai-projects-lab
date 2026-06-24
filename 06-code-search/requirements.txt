@@ -1,3 +1,4 @@
 gradio>=4.0
 sentence-transformers>=2.2
 numpy>=1.24
+pytest>=8.0

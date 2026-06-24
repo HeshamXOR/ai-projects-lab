@@ -5,6 +5,14 @@ Classify text as **positive / negative / neutral** and detect **fine-grained emo
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **MLP classifier with hand-derived backprop** (NumPy, no autograd) — `core/mlp.py`
+- **Metrics**: confusion matrix, precision/recall/F1, macro-F1 — `core/metrics.py`
+- **Calibration**: temperature scaling + Expected Calibration Error — `core/metrics.py`
+
+The pretrained classifiers stay as the production path; the from-scratch MLP proves the fundamentals (it learns XOR). See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Sentiment** — RoBERTa model tuned for sentiment (`twitter-roberta-base-sentiment-latest`).
