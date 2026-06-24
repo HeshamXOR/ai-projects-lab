@@ -5,6 +5,13 @@ Upload or record audio → get an accurate **transcript** (OpenAI Whisper) and, 
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **Mel-spectrogram front-end** (pre-emphasis, framing, Hann window, power spectrum, mel filterbank, log) — `core/dsp.py`
+- **Voice Activity Detection** (energy + zero-crossing rate) — `core/vad.py`
+
+Whisper does the transcription; this builds and visualizes the audio features that normally live invisibly inside the model. See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Transcription** — `whisper-base` via the transformers ASR pipeline, with 30-second chunking so long audio works.

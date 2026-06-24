@@ -3,3 +3,7 @@ diffusers>=0.27
 transformers>=4.38
 accelerate>=0.27
 torch>=2.0
+numpy>=1.24
+matplotlib>=3.7
+pillow>=10.0
+pytest>=8.0

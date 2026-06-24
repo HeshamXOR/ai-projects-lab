@@ -5,6 +5,13 @@ Generate images from text prompts with **Stable Diffusion**. Control steps, guid
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **Diffusion math**: noise schedule, forward process, **DDPM + DDIM** reverse steps, classifier-free guidance — `core/ddim.py`
+- **Toy diffusion model**: a NumPy noise-predictor (hand-written backprop) trained on 2D data, sampled with the DDIM loop — `core/toy.py`
+
+The app's second tab trains this live so you can watch noise become a shape. Stable Diffusion remains the high-quality image path. See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Text-to-image** — SD 1.5 via the `diffusers` library.
