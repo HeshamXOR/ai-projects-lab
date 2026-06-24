@@ -29,16 +29,20 @@ On Lightning you can also use the Studio's built-in port forwarding (port `7860`
 
 | Project | Minimum | Recommended | Notes |
 |---------|---------|-------------|-------|
-| 1 · RAG Doc Q&A | CPU | **L4** | Embeddings run fine on CPU; a GPU speeds up the optional local LLM. |
-| 2 · Resume Matcher | CPU | CPU | Embedding-only; no GPU needed. |
-| 3 · Image Q&A | CPU (slow) | **L4** | BLIP is much snappier on a GPU; CPU works for a demo. |
-| 4 · Smart Summarizer | CPU | **L4** | Summarization model benefits from GPU on long inputs. |
-| 5 · Sentiment & Emotion | CPU | CPU | Small classifiers; runs fine on CPU. |
-| 6 · Code Search | CPU | CPU | Embedding-only; no GPU needed. |
-| 7 · Speech-to-Text | CPU (slow) | **L4** | Whisper is much faster on GPU; CPU works for short clips. Needs `ffmpeg`. |
-| 8 · Image Generator | CPU (very slow) | **L4** | Stable Diffusion really wants a GPU — record this preview on L4. |
+| 1 · RAG Doc Q&A | CPU | **L4** | From-scratch HNSW/BM25 run on CPU; GPU speeds the optional LLM. |
+| 2 · Resume Matcher | CPU | CPU | TF-IDF + logreg from scratch; no GPU needed. |
+| 3 · Image Q&A | CPU (slow) | **L4** | BLIP + attention/Grad-CAM; GPU is snappier. |
+| 4 · Smart Summarizer | CPU | **L4** | TextRank runs on CPU; the abstractive model likes a GPU. |
+| 5 · Sentiment & Emotion | CPU | CPU | Small classifiers + from-scratch MLP; CPU is fine. |
+| 6 · Code Search | CPU | CPU | Inverted index + BM25F from scratch; no GPU needed. |
+| 7 · Speech-to-Text | CPU (slow) | **L4** | From-scratch DSP on CPU; Whisper faster on GPU. Needs `ffmpeg`. |
+| 8 · Image Generator | CPU (very slow) | **L4** | Toy diffusion runs on CPU; Stable Diffusion wants a GPU. |
+| 9 · microgpt | CPU (tiny) | **L4** | Trains a real GPT — use a GPU for coherent samples. |
+| 10 · nanograd | CPU | CPU | Pure NumPy autodiff; no GPU. |
+| 11 · seg-studio | CPU | CPU | Classical CV from scratch; CPU only. |
+| 12 · agentic-rag | CPU | CPU | From-scratch planner/verifier; LLM optional. |
 
-**Recommendation:** start every project on a **free CPU Studio** to verify it runs and to grab a screenshot. Switch to an **L4** GPU only for projects 1/3/4 when you want fast, smooth previews. An L4 is plenty — none of these need an A100.
+**Recommendation:** start every project on a **free CPU Studio** to verify it runs (and `pytest` the core). Switch to an **L4** GPU for 3/4/7/8/9 when you want fast previews or to train microgpt. An L4 is plenty — none of these need an A100.
 
 > Tip: Lightning bills GPU by the second. Develop/screenshot on CPU, switch to L4 for the polished demo recording, then stop the GPU.
 

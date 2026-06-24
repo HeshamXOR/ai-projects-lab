@@ -5,6 +5,13 @@ Upload an image → get an automatic **caption**, then ask **visual questions** 
 ![preview](preview.gif)
 <!-- Record a short clip on Lightning and save it as preview.gif here. -->
 
+## What I implemented from scratch
+
+- **Attention rollout** — composes per-layer transformer attention into a saliency map — `core/attention_rollout.py`
+- **Grad-CAM** — gradient-weighted activation heatmaps (where the model looked) — `core/gradcam.py`
+
+BLIP answers the questions; these add explainability you can *see*. See [EXPLAINER.md](EXPLAINER.md); verify with `pytest`.
+
 ## What it does
 
 - **Captioning** — describes the image in a sentence (`blip-image-captioning-base`).
