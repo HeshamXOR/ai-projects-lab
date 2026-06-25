@@ -13,17 +13,16 @@ from core.rules import (
 
 # --------------------------- Luhn checksum --------------------------------- #
 def test_luhn_valid_known_cards():
-    # Well-known Luhn-valid test numbers.
+    # Well-known Luhn-valid test card numbers (16 digits each).
     assert luhn_check("4242424242424242")  # Visa test card
     assert luhn_check("4111111111111111")  # Visa test card
     assert luhn_check("5500005555555559")  # Mastercard test card
-    assert luhn_check("79927398713")  # classic Luhn example -> but < 12 digits
 
 
-def test_luhn_classic_example():
-    # The canonical Wikipedia Luhn example has 11 digits; we require >=12,
-    # so pad it: validate the algorithm via a 16-digit valid number instead.
-    assert luhn_check("4242 4242 4242 4242")  # separators stripped
+def test_luhn_strips_separators():
+    # The same number with spaces/dashes must still validate.
+    assert luhn_check("4242 4242 4242 4242")
+    assert luhn_check("4242-4242-4242-4242")
 
 
 def test_luhn_invalid():

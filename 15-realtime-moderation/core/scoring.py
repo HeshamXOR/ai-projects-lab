@@ -39,6 +39,28 @@ DEFAULT_BLOCK_THRESHOLD = 0.70
 # How strongly the classifier's P(toxic) feeds the toxicity score.
 DEFAULT_CLASSIFIER_WEIGHT = 0.6
 
+# The classifier only contributes once it leans toxic past this confidence.
+# Below it (near the 0.5 prior, or clean-leaning) it adds nothing, so a small
+# bundled model cannot push obviously-clean text into FLAG on noise alone.
+DEFAULT_CLASSIFIER_FLOOR = 0.6
+
+
+def _classifier_signal(
+    toxic_probability: float,
+    floor: float,
+    weight: float,
+) -> float:
+    """Map ``P(toxic)`` to a bounded toxicity contribution.
+
+    Probabilities below ``floor`` contribute nothing. Above it, the excess is
+    rescaled to ``[0, 1]`` and multiplied by ``weight`` so confident toxic
+    predictions lift the score while uncertain ones stay silent.
+    """
+    if toxic_probability <= floor:
+        return 0.0
+    rescaled = (toxic_probability - floor) / (1.0 - floor)
+    return rescaled * weight
+
 
 def _noisy_or(values: Sequence[float]) -> float:
     """Combine independent probabilities via ``1 - prod(1 - v)``."""
@@ -86,6 +108,7 @@ def score_text(
     toxic_probability: float,
     *,
     classifier_weight: float = DEFAULT_CLASSIFIER_WEIGHT,
+    classifier_floor: float = DEFAULT_CLASSIFIER_FLOOR,
     flag_threshold: float = DEFAULT_FLAG_THRESHOLD,
     block_threshold: float = DEFAULT_BLOCK_THRESHOLD,
 ) -> ScoreResult:
@@ -96,6 +119,8 @@ def score_text(
         toxic_probability: ``P(toxic)`` from the Naive Bayes classifier.
         classifier_weight: Weight applied to the classifier signal when it is
             folded into the toxicity category.
+        classifier_floor: Confidence below which the classifier contributes
+            nothing (suppresses small-data noise near the 0.5 prior).
         flag_threshold: Overall score at/above which to FLAG.
         block_threshold: Overall score at/above which to BLOCK.
 
@@ -111,9 +136,9 @@ def score_text(
     for hit in hits:
         per_cat_sevs[hit.category.value].append(hit.severity)
 
-    # Inject the classifier signal into toxicity.
+    # Inject the classifier signal into toxicity (floored + rescaled).
     per_cat_sevs[Category.TOXICITY.value].append(
-        toxic_probability * classifier_weight
+        _classifier_signal(toxic_probability, classifier_floor, classifier_weight)
     )
 
     category_scores = {

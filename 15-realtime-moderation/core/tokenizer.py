@@ -55,7 +55,9 @@ class Tokenizer:
         """Apply character-level normalization to ``text``.
 
         Order matters: NFKC first so that compatibility characters collapse,
-        then accent stripping, then case folding, then leet folding.
+        then accent stripping, then case folding. Leet folding is applied
+        later, per token, so that standalone punctuation (e.g. ``!``) is never
+        promoted into a letter and glued onto an adjacent word.
         """
         if not isinstance(text, str):
             raise TypeError(f"expected str, got {type(text).__name__}")
@@ -69,15 +71,25 @@ class Tokenizer:
         if self.lowercase:
             text = text.lower()
 
-        if self.fold_leet:
-            text = "".join(_LEET_MAP.get(c, c) for c in text)
-
         return text
 
+    def _fold_token(self, token: str) -> str:
+        """Apply leet folding within a single already-tokenized word."""
+        if not self.fold_leet:
+            return token
+        return "".join(_LEET_MAP.get(c, c) for c in token)
+
     def split(self, text: str) -> List[str]:
-        """Return the unigram tokens of ``text`` after normalization."""
+        """Return the unigram tokens of ``text`` after normalization.
+
+        Leet folding is applied per token so that punctuation that happens to
+        be a leet symbol (``!`` -> ``i``) cannot merge two real words.
+        """
         normalized = self.normalize(text)
-        return _TOKEN_RE.findall(normalized)
+        tokens = _TOKEN_RE.findall(normalized)
+        if self.fold_leet:
+            tokens = [self._fold_token(t) for t in tokens]
+        return tokens
 
     def _ngrams(self, tokens: List[str], n: int) -> List[str]:
         """Return the list of ``n``-grams (space-joined) from ``tokens``."""
