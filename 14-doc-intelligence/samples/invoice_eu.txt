@@ -1,0 +1,17 @@
+Müller Elektronik GmbH
+Hauptstraße 17
+10115 Berlin
+
+RECHNUNG
+
+Rechnung Nr: 2024/0456
+Datum: 14 Februar 2024
+
+Beschreibung                  Menge   Einzelpreis   Betrag
+USB-C Kabel 2m                 4       9,99          39,96
+Mechanische Tastatur           2       89,50         179,00
+Monitor 27 Zoll                1       1.234,56      1.234,56
+
+Zwischensumme                                        1.453,52
+MwSt (19%)                                            276,17
+Gesamtbetrag                                         1.729,69 EUR

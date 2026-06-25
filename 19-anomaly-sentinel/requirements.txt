@@ -1,0 +1,8 @@
+# The monitoring core (drift tests, detectors, rule engine) is pure NumPy —
+# implemented from scratch, no SciPy / scikit-learn.
+numpy>=1.26
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
+pytest>=8.0
+httpx>=0.27

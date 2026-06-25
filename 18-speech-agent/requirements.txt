@@ -1,0 +1,11 @@
+numpy>=1.26
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
+pytest>=8.0
+httpx>=0.27
+websockets>=12.0
+# OPTIONAL / pluggable — NOT required to run. The ASR and TTS backends are
+# behind interfaces in core/interfaces.py and are MOCKED in tests:
+#   openai-whisper   # real ASR (WhisperASR)
+#   pyttsx3          # real offline TTS (Pyttsx3TTS)

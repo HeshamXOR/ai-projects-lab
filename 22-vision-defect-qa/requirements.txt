@@ -1,0 +1,14 @@
+numpy>=1.24
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+pytest>=8.0
+
+# Optional: Pillow enables base64 image decoding in POST /inspect and /fit.
+pillow>=10.0
+
+# Optional (NOT required to run): torch + torchvision enable the
+# TorchCNNExtractor deep feature extractor. The default HandcraftedExtractor is
+# pure NumPy and needs none of these.
+# torch>=2.1
+# torchvision>=0.16

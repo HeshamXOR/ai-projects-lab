@@ -1,0 +1,14 @@
+# --- Core runtime ---
+fastapi>=0.110
+uvicorn[standard]>=0.27
+numpy>=1.24
+pydantic>=2.5
+
+# --- Tests ---
+pytest>=8.0
+httpx>=0.26          # required by fastapi.testclient
+
+# --- Optional: pretrained embeddings ---
+# The service runs fully without this. Uncomment to enable the optional
+# SentenceTransformerEmbedder hook in core/embed.py.
+# sentence-transformers>=2.5

@@ -1,0 +1,25 @@
+ACME Web Solutions LLC
+123 Market Street, Suite 400
+San Francisco, CA 94103
+
+INVOICE
+
+Invoice #: INV-2024-0099
+Invoice Date: 03/15/2024
+Due Date: 04/14/2024
+
+Bill To:
+Globex Corporation
+500 Industrial Way
+Austin, TX 78701
+
+Description                Qty    Unit Price    Amount
+Web design services        10     150.00        1500.00
+Annual hosting             1      240.00        240.00
+Consulting                 5      $200.00       $1,000.00
+
+Subtotal                                        $2,740.00
+Tax (8.5%)                                       $232.90
+Amount Due                                       $2,972.90
+
+Thank you for your business!

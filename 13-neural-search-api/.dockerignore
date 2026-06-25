@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+index_data/
+*.npy
+.git/
+.venv/
+venv/
+tests/
+*.md

@@ -1,0 +1,13 @@
+# Core runtime — kept minimal on purpose.
+torch>=2.0
+fastapi>=0.110
+uvicorn>=0.27
+pydantic>=2.6
+numpy>=1.24
+
+# Testing
+pytest>=8.0
+
+# NOTE: real (non-mock) base models require Hugging Face transformers. Install
+# it separately to plug a real LLM into the CausalLM seam in core/model.py:
+#   pip install transformers>=4.40 accelerate>=0.30

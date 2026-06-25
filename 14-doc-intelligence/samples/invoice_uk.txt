@@ -1,0 +1,14 @@
+Brightwave Consulting Ltd
+Reference: BW-7781
+
+Date of Issue: Jan 12, 2024
+
+Professional services rendered:
+
+Strategy workshop          1      £1,200.00     £1,200.00
+Implementation support     8      £95.00        £760.00
+Documentation              1      £350.00       £350.00
+
+Subtotal                                         £2,310.00
+VAT (20%)                                         £462.00
+Total Due                                        £2,772.00
